@@ -17,7 +17,7 @@ class Bank:
                 
             elif self.choice == "2":
                 self.user_cardnum_inpt = input("Enter your card number:\n")
-                self.user_cardpass_inpt = int(input("Enter your PIN:\n"))
+                self.user_cardpass_inpt = input("Enter your PIN:\n")
                 if self.cardnum == self.user_cardnum_inpt:
                     if self.cardpass == self.user_cardpass_inpt:
                         print("You have successfully logged in!\n")
@@ -45,12 +45,16 @@ class Bank:
 
     def cardnum_generate(self):
         self.card_first_half = "400000"
-        self.card_second_half = random.randint(100000000, 999999999)
+        self.card_second_half = ""
+        for x in range(9):
+            self.card_second_half += str(random.randint(0, 9))
         self.checksum = random.randint(0, 9)
         self.cardnum = self.card_first_half + str(self.card_second_half) + str(self.checksum)
 
     def cardpass_generate(self):
-        self.cardpass = random.randint(1000, 9999)
+        self.cardpass = ""
+        for x in range(4):
+            self.cardpass += str(random.randint(0, 9))
 
 
 my_bank = Bank()
