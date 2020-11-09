@@ -3,11 +3,9 @@ import random
 
 class Bank:
     def __init__(self):
-        
         self.balance = 0
 
     def menu(self):
-        
         while True:
             self.choice = input("1. Create an account\n2. Log into account\n0. Exit\n")
             if self.choice == "1":
