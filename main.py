@@ -1,10 +1,17 @@
 import random
+import sqlite3
+
+# Connect db
+conn = sqlite3.connect('card.s3db')
+cur = conn.cursor()
 
 
 class Bank:
     def __init__(self):
         self.balance = 0
-
+        self.id = 0
+    
+    # Menu
     def menu(self):
         while True:
             self.choice = input("1. Create an account\n2. Log into account\n0. Exit\n")
@@ -43,6 +50,7 @@ class Bank:
                 print("\nBye!")
                 exit()
 
+    # Card info generate
     def cardnum_generate(self):
         self.card_first_half = "400000"
         self.card_second_half = ""
@@ -57,6 +65,7 @@ class Bank:
         self.final_cardnum = self.cardnum
         self.final_cardnum3 = ""
         self.cheksum_gen()
+        self.db_creating
         
     
     def cheksum_gen(self):
@@ -78,6 +87,16 @@ class Bank:
         self.cardpass = ""
         for x in range(4):
             self.cardpass += str(random.randint(0, 9))
+    
+    # SQL query
+    def db_creating(self):
+        cur.execute('SELECT id')
+        if len(cur.fetchone()) < 0:
+            cur.execute('CREATE DATABASE card.s3db')
+            cur.execute('CREATE TABLE card(id INT,number TEXT,pin TEXT,balance INTEGER DEAFULT 0)')
+        else:
+            cur.execute('INSERT INTO card VALUES({self.id+=1,self.final_cardnum3,self.cardpass,self.balance})')
+
     
         
 my_bank = Bank()
