@@ -1,23 +1,26 @@
 import random
 import sqlite3
 
-# Connect db
-conn = sqlite3.connect('card.s3db')
-cur = conn.cursor()
+
+
 
 
 class Bank:
     def __init__(self):
         self.balance = 0
-        self.id = 0
+        
     
     # Menu
     def menu(self):
         while True:
+            self.db_connecting()
             self.choice = input("1. Create an account\n2. Log into account\n0. Exit\n")
             if self.choice == "1":
                 self.cardnum_generate()
                 self.cardpass_generate()
+                self.tab_creating()
+                self.data_insert()
+                self.db_comm()
                 print("Your card has been created")
                 print(f"Your card number:\n{int(self.final_cardnum3)}")
                 print(f"Your card PIN:\n{self.cardpass}\n")
@@ -25,14 +28,7 @@ class Bank:
             elif self.choice == "2":
                 self.user_cardnum_inpt = input("Enter your card number:\n")
                 self.user_cardpass_inpt = input("Enter your PIN:\n")
-                if self.final_cardnum3 == self.user_cardnum_inpt:
-                    if self.cardpass == self.user_cardpass_inpt:
-                        print("You have successfully logged in!\n")
-                        self.card_menu()
-                    else:
-                        print("Wrong card number or PIN!\n")
-                else:
-                        print("Wrong card number or PIN!\n")
+                self.cardnum_check()
             elif self.choice == "0":
                 print("\nBye!")
                 exit()
@@ -65,7 +61,8 @@ class Bank:
         self.final_cardnum = self.cardnum
         self.final_cardnum3 = ""
         self.cheksum_gen()
-        self.db_creating
+        
+        
         
     
     def cheksum_gen(self):
@@ -89,15 +86,39 @@ class Bank:
             self.cardpass += str(random.randint(0, 9))
     
     # SQL query
-    def db_creating(self):
-        cur.execute('SELECT id')
-        if len(cur.fetchone()) < 0:
-            cur.execute('CREATE DATABASE card.s3db')
-            cur.execute('CREATE TABLE card(id INT,number TEXT,pin TEXT,balance INTEGER DEAFULT 0)')
-        else:
-            cur.execute('INSERT INTO card VALUES({self.id+=1,self.final_cardnum3,self.cardpass,self.balance})')
+    def db_connecting(self):
+        self.conn = sqlite3.connect('card.s3db')
+        self.cur = self.conn.cursor()
 
+
+    def tab_creating(self):
+        self.cur.execute('CREATE TABLE IF NOT EXISTS card(id INTEGER PRIMARY KEY,number TEXT,pin TEXT,balance INTEGER)')
+        
+        
+    def data_insert(self):
+        self.cur.execute('INSERT INTO card(number, pin, balance) VALUES(?,?,?);', (self.final_cardnum3, self.cardpass, self.balance))    
+          
+    
+    def db_comm(self):
+        self.conn.commit()
+
+    def cardnum_check(self):
+        self.numcheck = self.cur.execute('SELECT number FROM card')
+        for i in self.numcheck:
+            if self.user_cardnum_inpt == :
+                self.cardpass_check()
+            else:
+                print("Wrong card number or PIN!\n")
+    
+    def cardpass_check(self):
+        self.passcheck = self.cur.execute('SELECT pin')
+        if self.user_cardpass_inpt in self.passcheck:
+            print("You have successfully logged in!\n")
+            self.card_menu()
+        else:
+            print("Wrong card number or PIN!\n")
     
         
 my_bank = Bank()
 my_bank.menu()
+print(my_bank.wewewe)
