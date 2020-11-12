@@ -52,7 +52,7 @@ class Bank:
         self.cardnum = self.card_first_half + str(self.card_second_half) 
         self.sum_cardnums = 0
         self.cardnum2 = [int(x) for x in self.cardnum]
-        self.cardnum3 = [v for k,v in enumerate(self.cardnum2) if not k%2]
+        self.cardnum3 = [v for k, v in enumerate(self.cardnum2) if not k%2]
         self.cardnum4 = [v for k, v in enumerate(self.cardnum2) if k%2]
         self.final_cardnum = self.cardnum
         self.final_cardnum3 = ""
