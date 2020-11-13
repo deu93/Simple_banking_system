@@ -104,19 +104,34 @@ class Bank:
 
     def cardnum_check(self):
         self.numcheck = self.cur.execute('SELECT number FROM card')
-        for i in self.numcheck:
-            if self.user_cardnum_inpt == :
+        self.numcheck1 = list(self.numcheck)
+        self.numcheck2 = self.numcheck1[-1]
+        for i in self.numcheck1:
+            self.numcheck_br1 = str(i)
+            self.numcheck_br2 = self.numcheck_br1[1:-1]
+            self.numcheck_br3 = self.numcheck_br2[1:-2]
+            if self.user_cardnum_inpt == self.numcheck_br3:
                 self.cardpass_check()
-            else:
+            elif i == self.numcheck2:
                 print("Wrong card number or PIN!\n")
+            else:
+                continue
     
     def cardpass_check(self):
-        self.passcheck = self.cur.execute('SELECT pin')
-        if self.user_cardpass_inpt in self.passcheck:
-            print("You have successfully logged in!\n")
-            self.card_menu()
-        else:
-            print("Wrong card number or PIN!\n")
+        self.passcheck = self.cur.execute('SELECT pin FROM card')
+        self.passcheck1 = list(self.passcheck)
+        self.passcheck2 = self.passcheck1[-1]
+        for i in self.passcheck:
+            self.passcheck_br1 = str(i)
+            self.passcheck_br2 = self.passcheck_br1[1:-1]
+            self.passcheck_br3 = self.passcheck_br2[1:-2]
+            if self.user_cardpass_inpt == self.passcheck_br3:
+                print("You have successfully logged in!\n")
+                self.card_menu()
+            elif i == self.passcheck2:
+                print("Wrong card number or PIN!\n")
+            else:
+                continue
     
         
 my_bank = Bank()
