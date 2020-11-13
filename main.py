@@ -1,10 +1,13 @@
 import random
 import sqlite3
 
+
 def db():
     conn = sqlite3.connect('card.s3db')
     cur = conn.cursor()
     cur.execute('CREATE TABLE IF NOT EXISTS card(id INTEGER PRIMARY KEY,number TEXT,pin TEXT,balance INTEGER)')
+
+
 class Bank:
     def __init__(self):
         self.balance = 0
@@ -34,15 +37,39 @@ class Bank:
 
     def card_menu(self):
         while True:
-            self.card_menu_choice = input("1. Balance\n2. Log out\n0. Exit\n")
+            self.card_menu_choice = input(
+                "1. Balance\n2. Add income\n3. Do transfer\n4. Close account\n5. Log out\n0. Exit\n")
             if self.card_menu_choice == "1":
                 print(f"\nBalance: {self.balance}\n")
             elif self.card_menu_choice == "2":
+                self.card_income()
+            elif self.card_menu_choice == "3":
+                self.m_transfer()
+            elif self.card_menu_choice == "4":
+                self.card_del()
+            elif self.card_menu_choice == "5":
                 print("You have successfully logged out!\n")
                 break
             elif self.card_menu_choice == "0":
                 print("\nBye!")
                 exit()
+
+    def card_income(self):
+        self.balance += int(input("Enter income:\n"))
+        print("Income was added!")
+        self.cur.execute("UPDATE card SET balance = ? WHERE number = ?", (self.balance, self.user_cardnum_inpt))
+        self.db_comm()
+
+
+    def m_transfer(self):
+        print("Transfer\n")
+        self.card_check_transf()
+        self.cur.execute("UPDATE card SET balance = ? WHERE number = ?", (self.balance, self.user_cardnum_inpt))
+        self.db_comm()
+
+    def card_del(self):
+        self.cur.execute('DELETE FROM card WHERE number = ? ', (self.user_cardnum_inpt))
+        self.db_comm()
 
     # Card info generate
     def cardnum_generate(self):
@@ -74,6 +101,53 @@ class Bank:
             self.checksum_num = self.sum_cardnums % 10
             self.checksum_num1 = 10 - self.checksum_num
             self.final_cardnum3 = self.cardnum + str(self.checksum_num1)
+
+    def card_check_transf(self):
+        self.card_transf = input('Enter card number:\n')
+        self.card_transf_num = [int(x) for x in self.card_transf]
+        self.card_transf_num1 = [v for k, v in enumerate(self.card_transf_num) if not k % 2]
+        self.card_transf_num2 = [v for k, v in enumerate(self.card_transf_num) if k % 2]
+        self.card_transf_sumnums = 0
+        for x in self.card_transf_num1:
+            x = x * 2
+            if x >= 9:
+                x -= 9
+            self.card_transf_sumnums += x
+        for x in self.card_transf_num2:
+            self.card_transf_sumnums += x
+        print(self.card_transf_sumnums)
+        if self.card_transf_sumnums % 10 == 0:
+            self.card_check()
+        else:
+            print("Probably you made a mistake in the card number. Please try again!\n")
+
+    def card_check(self):
+        self.numcheck = self.cur.execute('SELECT number FROM card')
+        self.numcheck1 = list(self.numcheck)
+        self.numcheck2 = self.numcheck1[-1]
+        for i in self.numcheck1:
+            self.numcheck_br1 = str(i)
+            self.numcheck_br2 = self.numcheck_br1[1:-1]
+            self.numcheck_br3 = self.numcheck_br2[1:-2]
+            if self.card_transf != self.user_cardnum_inpt:
+                if self.card_transf == self.numcheck_br3:
+                    self.amount_transf = int(input("Enter how much money you want to transfer:\n"))
+                    if self.balance > self.amount_transf:
+                        self.balance -= self.amount_transf
+                        self.cur.execute("UPDATE card SET balance = ? WHERE number = ?", (self.balance, self.user_cardnum_inpt))
+                        self.balance1 = self.cur.execute("SELECT balance FROM card WHERE number = ?", self.card_transf)
+                        self.balance2 = self.balance1 + self.amount_transf
+                        self.cur.execute("UPDATE card SET balance = ? WHERE number = ?", (self.balance2, self.card_transf))
+                        self.db_comm()
+                        print("Success!")
+                        print(self.cur.execute("SELECT balance FROM card WHERE number = ?", self.card_transf))
+                    else:
+                        print("Not enough money!")
+                elif i == self.numcheck2:
+                    print("Such a card does not exist.")
+                    
+            else:
+                print("You can't transfer money to the same account!")
 
     def cardpass_generate(self):
         self.cardpass = ""
@@ -126,6 +200,7 @@ class Bank:
                 print("Wrong card number or PIN!\n")
             else:
                 continue
+
 
 # db()
 my_bank = Bank()
