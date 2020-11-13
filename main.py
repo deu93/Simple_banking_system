@@ -115,7 +115,6 @@ class Bank:
             self.card_transf_sumnums += x
         for x in self.card_transf_num2:
             self.card_transf_sumnums += x
-        print(self.card_transf_sumnums)
         if self.card_transf_sumnums % 10 == 0:
             self.card_check()
         else:
@@ -136,11 +135,10 @@ class Bank:
                         self.balance -= self.amount_transf
                         self.cur.execute("UPDATE card SET balance = ? WHERE number = ?", (self.balance, self.user_cardnum_inpt))
                         self.balance1 = self.cur.execute("SELECT balance FROM card WHERE number = ?", self.card_transf)
-                        self.balance2 = self.balance1 + self.amount_transf
-                        self.cur.execute("UPDATE card SET balance = ? WHERE number = ?", (self.balance2, self.card_transf))
+                        self.cur.execute("UPDATE card SET balance = ? WHERE number = ?", (self.amount_transf, self.card_transf))
                         self.db_comm()
                         print("Success!")
-                        print(self.cur.execute("SELECT balance FROM card WHERE number = ?", self.card_transf))
+                        
                     else:
                         print("Not enough money!")
                 elif i == self.numcheck2:
