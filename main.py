@@ -63,8 +63,6 @@ class Bank:
         self.cheksum_gen()
         
         
-        
-    
     def cheksum_gen(self):
         for x in self.cardnum3:
                 x = x * 2
@@ -102,6 +100,7 @@ class Bank:
     def db_comm(self):
         self.conn.commit()
 
+    # Login checking
     def cardnum_check(self):
         self.numcheck = self.cur.execute('SELECT number FROM card')
         self.numcheck1 = list(self.numcheck)
