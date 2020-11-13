@@ -1,15 +1,14 @@
 import random
 import sqlite3
 
-
-
-
-
+def db():
+    conn = sqlite3.connect('card.s3db')
+    cur = conn.cursor()
+    cur.execute('CREATE TABLE IF NOT EXISTS card(id INTEGER PRIMARY KEY,number TEXT,pin TEXT,balance INTEGER)')
 class Bank:
     def __init__(self):
         self.balance = 0
-        
-    
+
     # Menu
     def menu(self):
         while True:
@@ -24,7 +23,7 @@ class Bank:
                 print("Your card has been created")
                 print(f"Your card number:\n{int(self.final_cardnum3)}")
                 print(f"Your card PIN:\n{self.cardpass}\n")
-                
+
             elif self.choice == "2":
                 self.user_cardnum_inpt = input("Enter your card number:\n")
                 self.user_cardpass_inpt = input("Enter your PIN:\n")
@@ -33,10 +32,9 @@ class Bank:
                 print("\nBye!")
                 exit()
 
-
     def card_menu(self):
         while True:
-            self.card_menu_choice = input("1. Balance\n2. Log out\n0. Exit\n")    
+            self.card_menu_choice = input("1. Balance\n2. Log out\n0. Exit\n")
             if self.card_menu_choice == "1":
                 print(f"\nBalance: {self.balance}\n")
             elif self.card_menu_choice == "2":
@@ -53,22 +51,21 @@ class Bank:
         for x in range(9):
             self.card_second_half += str(random.randint(0, 9))
         self.checksum = random.randint(0, 9)
-        self.cardnum = self.card_first_half + str(self.card_second_half) 
+        self.cardnum = self.card_first_half + str(self.card_second_half)
         self.sum_cardnums = 0
         self.cardnum2 = [int(x) for x in self.cardnum]
-        self.cardnum3 = [v for k, v in enumerate(self.cardnum2) if not k%2]
-        self.cardnum4 = [v for k, v in enumerate(self.cardnum2) if k%2]
+        self.cardnum3 = [v for k, v in enumerate(self.cardnum2) if not k % 2]
+        self.cardnum4 = [v for k, v in enumerate(self.cardnum2) if k % 2]
         self.final_cardnum = self.cardnum
         self.final_cardnum3 = ""
         self.cheksum_gen()
-        
-        
+
     def cheksum_gen(self):
         for x in self.cardnum3:
-                x = x * 2
-                if x >= 9:
-                    x -= 9
-                self.sum_cardnums += x
+            x = x * 2
+            if x >= 9:
+                x -= 9
+            self.sum_cardnums += x
         for x in self.cardnum4:
             self.sum_cardnums += x
         if self.sum_cardnums % 10 == 0:
@@ -77,26 +74,24 @@ class Bank:
             self.checksum_num = self.sum_cardnums % 10
             self.checksum_num1 = 10 - self.checksum_num
             self.final_cardnum3 = self.cardnum + str(self.checksum_num1)
-            
+
     def cardpass_generate(self):
         self.cardpass = ""
         for x in range(4):
             self.cardpass += str(random.randint(0, 9))
-    
+
     # SQL query
     def db_connecting(self):
         self.conn = sqlite3.connect('card.s3db')
         self.cur = self.conn.cursor()
 
-
     def tab_creating(self):
         self.cur.execute('CREATE TABLE IF NOT EXISTS card(id INTEGER PRIMARY KEY,number TEXT,pin TEXT,balance INTEGER)')
-        
-        
+
     def data_insert(self):
-        self.cur.execute('INSERT INTO card(number, pin, balance) VALUES(?,?,?);', (self.final_cardnum3, self.cardpass, self.balance))    
-          
-    
+        self.cur.execute('INSERT INTO card(number, pin, balance) VALUES(?,?,?);',
+                         (self.final_cardnum3, self.cardpass, self.balance))
+
     def db_comm(self):
         self.conn.commit()
 
@@ -115,12 +110,12 @@ class Bank:
                 print("Wrong card number or PIN!\n")
             else:
                 continue
-    
+
     def cardpass_check(self):
         self.passcheck = self.cur.execute('SELECT pin FROM card')
         self.passcheck1 = list(self.passcheck)
         self.passcheck2 = self.passcheck1[-1]
-        for i in self.passcheck:
+        for i in self.passcheck1:
             self.passcheck_br1 = str(i)
             self.passcheck_br2 = self.passcheck_br1[1:-1]
             self.passcheck_br3 = self.passcheck_br2[1:-2]
@@ -131,8 +126,7 @@ class Bank:
                 print("Wrong card number or PIN!\n")
             else:
                 continue
-    
-        
+
+# db()
 my_bank = Bank()
 my_bank.menu()
-print(my_bank.wewewe)
