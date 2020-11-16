@@ -40,10 +40,13 @@ class Bank:
             self.card_menu_choice = input(
                 "1. Balance\n2. Add income\n3. Do transfer\n4. Close account\n5. Log out\n0. Exit\n")
             if self.card_menu_choice == "1":
+                self.balance_check()
                 print(f"\nBalance: {self.balance}\n")
             elif self.card_menu_choice == "2":
+                self.balance_check()
                 self.card_income()
             elif self.card_menu_choice == "3":
+                self.balance_check()
                 self.m_transfer()
             elif self.card_menu_choice == "4":
                 self.card_del()
@@ -57,18 +60,21 @@ class Bank:
     def card_income(self):
         self.balance += int(input("Enter income:\n"))
         print("Income was added!")
-        self.cur.execute("UPDATE card SET balance = ? WHERE number = ?", (self.balance, self.user_cardnum_inpt))
+        self.cur.execute(f"UPDATE card SET balance = {self.balance} WHERE number = {self.user_cardnum_inpt}")
         self.db_comm()
 
-
+    def balance_check(self):
+        self.balance = self.cur.execute(f"SELECT balance FROM card WHERE number = {self.user_cardnum_inpt}").fetchone()
+        self.balance4 = self.balance[0] 
+        self.balance = self.balance4
     def m_transfer(self):
         print("Transfer\n")
         self.card_check_transf()
-        self.cur.execute("UPDATE card SET balance = ? WHERE number = ?", (self.balance, self.user_cardnum_inpt))
+        self.cur.execute(f"UPDATE card SET balance = {self.balance} WHERE number = {self.user_cardnum_inpt}").fetchone()
         self.db_comm()
 
     def card_del(self):
-        self.cur.execute('DELETE FROM card WHERE number = ? ', (self.user_cardnum_inpt))
+        self.cur.execute(f'DELETE FROM card WHERE number = {self.user_cardnum_inpt} ')
         self.db_comm()
 
     # Card info generate
@@ -121,7 +127,7 @@ class Bank:
             print("Probably you made a mistake in the card number. Please try again!\n")
 
     def card_check(self):
-        self.numcheck = self.cur.execute('SELECT number FROM card')
+        self.numcheck = self.cur.execute('SELECT number FROM card').fetchall()
         self.numcheck1 = list(self.numcheck)
         self.numcheck2 = self.numcheck1[-1]
         for i in self.numcheck1:
@@ -131,21 +137,24 @@ class Bank:
             if self.card_transf != self.user_cardnum_inpt:
                 if self.card_transf == self.numcheck_br3:
                     self.amount_transf = int(input("Enter how much money you want to transfer:\n"))
+                    self.balance_check()
                     if self.balance > self.amount_transf:
                         self.balance -= self.amount_transf
-                        self.cur.execute("UPDATE card SET balance = ? WHERE number = ?", (self.balance, self.user_cardnum_inpt))
-                        self.balance1 = self.cur.execute("SELECT balance FROM card WHERE number = ?", self.card_transf)
-                        self.cur.execute("UPDATE card SET balance = ? WHERE number = ?", (self.amount_transf, self.card_transf))
+                        self.cur.execute(f"UPDATE card SET balance = {self.balance} WHERE number = {self.user_cardnum_inpt}")
+                        self.balance1 = self.cur.execute(f"SELECT balance FROM card WHERE number = {self.card_transf}").fetchone()
+                        self.cur.execute(f"UPDATE card SET balance = {self.amount_transf} WHERE number = {self.card_transf}")
                         self.db_comm()
                         print("Success!")
-                        
                     else:
                         print("Not enough money!")
+                        break
                 elif i == self.numcheck2:
                     print("Such a card does not exist.")
+                    break
                     
             else:
                 print("You can't transfer money to the same account!")
+                break
 
     def cardpass_generate(self):
         self.cardpass = ""
